@@ -8,9 +8,20 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer);
 
-io.on("connect", (socket)=>{
- console.log("user connected", socket.id);
-});
-app.use(express.static("public"));
+const loadMap = require("./mapLoader");
 
-httpServer.listen(5000);
+async function main(){
+    
+   const map2D = await loadMap();
+
+    io.on("connect", (socket)=>{
+     console.log("user connected", socket.id);
+
+     socket.emit("map", map2D);
+    });
+    app.use(express.static("public"));
+    
+    httpServer.listen(5000);
+}
+
+main();
